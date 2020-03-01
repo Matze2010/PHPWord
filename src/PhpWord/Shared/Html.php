@@ -23,6 +23,7 @@ use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\SimpleType\NumberFormat;
+use PhpOffice\PhpWord\Style\ListItem;
 use PhpOffice\PhpWord\Style\Paragraph;
 
 /**
@@ -481,6 +482,9 @@ class Html
     {
         $cNodes = $node->childNodes;
         if (!empty($cNodes)) {
+            if (is_array($explicitStyle = self::recursiveParseStylesInHierarchy($node, $styles['paragraph']))) {
+                $styles['list'] = $explicitStyle;
+            }
             $listRun = $element->addListItemRun($data['listdepth'], $styles['list'], $styles['paragraph']);
             foreach ($cNodes as $cNode) {
                 self::parseNode($cNode, $listRun, $styles, $data);
@@ -607,6 +611,14 @@ class Html
                         $styles['borderSize'] = Converter::cssToPoint($matches[1]);
                         $styles['borderColor'] = trim($matches[2], '#');
                         $styles['borderStyle'] = self::mapBorderStyle($matches[3]);
+                    }
+                    break;
+                case 'list-type':
+                    $class_name = get_class(new ListItem());
+                    try {
+                        $constant_reflex = new \ReflectionClassConstant($class_name, $cValue);
+                        $styles['listType'] = $constant_reflex->getValue();
+                    } catch (\ReflectionException $e) {
                     }
                     break;
             }
