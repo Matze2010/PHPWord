@@ -162,6 +162,7 @@ class Html
             'img'       => array('Image',       $node,  $element,   $styles,    null,   null,           null),
             'br'        => array('LineBreak',   null,   $element,   $styles,    null,   null,           null),
             'a'         => array('Link',        $node,  $element,   $styles,    null,   null,           null),
+            'input'     => array('Input',       $node,  $element,   $styles,    null,   null,           null),
         );
 
         $newElement = null;
@@ -232,6 +233,24 @@ class Html
         $newElement = $element->addTextRun($styles['paragraph']);
 
         return $newElement;
+    }
+
+    /**
+     * Parse input node
+     *
+     * @param \DOMNode $node
+     * @param \PhpOffice\PhpWord\Element\AbstractContainer $element
+     * @param array &$styles
+     */
+    protected static function parseInput($node, $element, &$styles)
+    {
+        $attributes = $node->attributes;
+    
+        if (($type = $attributes->getNamedItem('type')->value) === 'checkbox') {
+            $checked = ($checked = $attributes->getNamedItem('checked')) && $checked->value === "true" ?? false;
+            $textrun = $element->addTextRun();
+            $textrun->addFormField('checkbox')->setValue($checked);
+        }
     }
 
     /**
