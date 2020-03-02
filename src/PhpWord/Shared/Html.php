@@ -484,6 +484,7 @@ class Html
         if (!empty($cNodes)) {
             if (is_array($explicitStyle = self::recursiveParseStylesInHierarchy($node, $styles['paragraph']))) {
                 $styles['list'] = $explicitStyle;
+                $styles['paragraph'] = $explicitStyle;
             }
             $listRun = $element->addListItemRun($data['listdepth'], $styles['list'], $styles['paragraph']);
             foreach ($cNodes as $cNode) {
